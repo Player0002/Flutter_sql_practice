@@ -1,16 +1,10 @@
-# sql_pratice
+SQL Practice
+=====
+ 플루터에서 SQL을 사용하기 위해 연습한 자료들을 저장하는 공간입니다.
 
-Sql Pratice
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 공부순서
+ 이번 공부 진행 순서는 다음과 같습니다.
+ 
+ * 기본적인 sqflite 사용해보기
+ * bloc 패턴 적용해보기
+ * 디자인 꾸미기
