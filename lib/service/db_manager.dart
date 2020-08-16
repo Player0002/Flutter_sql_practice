@@ -1,8 +1,8 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sql_pratice/todo_model.dart';
+import 'package:sql_pratice/model/todo_model.dart';
 
-final String table_name = "todo";
+final String tableName = "todo";
 
 class DbManager {
   DbManager._();
@@ -23,20 +23,20 @@ class DbManager {
     print(path);
     return await openDatabase(path, version: 1, onCreate: (db, version) async {
       await db.execute(
-          '''create table $table_name(id INTEGER PRIMARY KEY AUTOINCREMENT,whens BIGINT,title TEXT,contents TEXT);''');
+          '''create table $tableName(id INTEGER PRIMARY KEY AUTOINCREMENT,whens BIGINT,title TEXT,contents TEXT);''');
     }, onUpgrade: (db, oldv, newv) {}); // Migration 이 ㅣ필요하다면 다음을 구현하세요!
   }
 
   createData(ToDoModel model) async {
     final db = await database;
-    var result = await db.insert(table_name, model.toMap());
+    var result = await db.insert(tableName, model.toMap());
     return result;
   }
 
   getData(int id) async {
     final db = await database;
     var result =
-        await db.rawQuery('select * from $table_name where id = ?', [id]);
+        await db.rawQuery('select * from $tableName where id = ?', [id]);
 
     if (result.isEmpty) return Null;
 
@@ -46,7 +46,7 @@ class DbManager {
 
   Future<List<ToDoModel>> getAllData() async {
     final db = await database;
-    var result = await db.rawQuery('select * from $table_name');
+    var result = await db.rawQuery('select * from $tableName');
     List<ToDoModel> list = result.isNotEmpty
         ? result.map((e) => ToDoModel.fromMap(e)).toList()
         : [];
@@ -56,18 +56,18 @@ class DbManager {
   deleteData(int id) async {
     final db = await database;
     var result =
-        await db.rawDelete('delete from $table_name where id = ?', [id]);
+        await db.rawDelete('delete from $tableName where id = ?', [id]);
     return result;
   }
 
   deleteAllData() async {
     final db = await database;
-    db.rawDelete('delete from $table_name');
+    db.rawDelete('delete from $tableName');
   }
 
   updateData(ToDoModel model) async {
     final db = await database;
-    var result = db.update(table_name, model.toMap());
+    var result = db.update(tableName, model.toMap());
     return result;
   }
 }

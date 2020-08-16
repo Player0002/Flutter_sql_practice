@@ -1,8 +1,18 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:sql_pratice/db_manager.dart';
-import 'package:sql_pratice/todo_model.dart';
+import 'package:sql_pratice/bloc/todo_bloc.dart';
+import 'package:sql_pratice/service/db_manager.dart';
+
+import 'model/todo_model.dart';
+
+final List<ToDoModel> datas = new List<int>.generate(10, (index) => index + 1)
+    .map((e) => ToDoModel(
+        id: null,
+        whens: DateTime.now(),
+        title: "Test $e",
+        contents: "TestContents $e"))
+    .toList();
 
 void main() {
   runApp(MyApp());
@@ -17,12 +27,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ToDoViewer extends StatefulWidget {
-  @override
-  _ToDoViewerState createState() => _ToDoViewerState();
-}
-
-class _ToDoViewerState extends State<ToDoViewer> {
+class ToDoViewer extends StatelessWidget {
+  final ToDoBloc bloc = ToDoBloc();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,8 +42,7 @@ class _ToDoViewerState extends State<ToDoViewer> {
         children: [
           FloatingActionButton(
             onPressed: () {
-              DbManager().deleteAllData();
-              setState(() {});
+              bloc.deleteAll();
             },
             child: Icon(Icons.refresh),
           ),
@@ -45,7 +50,9 @@ class _ToDoViewerState extends State<ToDoViewer> {
             height: 10,
           ),
           FloatingActionButton(
-            onPressed: addChild,
+            onPressed: () {
+              bloc.addTodo(datas[Random().nextInt(datas.length)]);
+            },
             child: Icon(Icons.add),
           )
         ],
@@ -53,24 +60,9 @@ class _ToDoViewerState extends State<ToDoViewer> {
     );
   }
 
-  addChild() {
-    DateTime time = DateTime.now();
-    final List<ToDoModel> datas =
-        new List<int>.generate(10, (index) => index + 1)
-            .map((e) => ToDoModel(
-                id: null,
-                whens: time,
-                title: "Test $e",
-                contents: "TestContents $e"))
-            .toList();
-    DbManager().createData(datas[Random().nextInt(datas.length)]);
-    print("ADD");
-    setState(() {});
-  }
-
   makeList() {
-    return FutureBuilder<List<ToDoModel>>(
-      future: DbManager().getAllData(),
+    return StreamBuilder<List<ToDoModel>>(
+      stream: bloc.todo,
       builder: (ctx, snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
@@ -80,8 +72,7 @@ class _ToDoViewerState extends State<ToDoViewer> {
               return Dismissible(
                 key: UniqueKey(),
                 onDismissed: (direction) {
-                  DbManager().deleteData(item.id);
-                  setState(() {});
+                  bloc.deleteTodo(item.id);
                 },
                 child: Center(
                   child: Text(item.title),
